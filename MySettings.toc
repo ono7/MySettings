@@ -1,0 +1,5 @@
+
+## Interface: 120000
+## Title: MySettings
+## Notes: Dynamically sets SQW based on latency and sets targetting based on content (PVP/PVE).
+core.lua
