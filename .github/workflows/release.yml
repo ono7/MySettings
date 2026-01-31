@@ -23,3 +23,6 @@ jobs:
           # Map BOTH variable names to ensure the script sees it
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # This flag tells it NOT to generate the extra metadata file
+          args: -n
