@@ -18,42 +18,56 @@ local function Log(message, value)
   print(prefix .. " " .. message .. suffix)
 end
 
--- 2. INITIALIZATION
+-- 2. SMART SETTER HELPER
+-- Sets the CVar, then retrieves it to verify the engine accepted it
+local function SetAndVerifyCVar(cvar, value)
+  SetCVar(cvar, value)
+  local actualValue = GetCVar(cvar)
+  Log(cvar, actualValue)
+end
+
+-- 3. INITIALIZATION & PVP OPTIMIZATIONS
 Log("Loading MySettings... have a wonderful time hunting")
 
-local nameplateOverlapV = "0.28"
-SetCVar("nameplateOverlapV", nameplateOverlapV)
-Log("[GUI] nameplateOverlapV", nameplateOverlapV)
+-- Original GUI Settings
+SetAndVerifyCVar("nameplateOverlapV", "0.28")
+SetAndVerifyCVar("nameplateShowFriends", 0)
+SetAndVerifyCVar("nameplateShowFriendlyNPCs", 0)
+SetAndVerifyCVar("floatingCombatTextCombatHealing", 0)
 
-SetCVar("nameplateShowFriends", 0)
-Log("[GUI] ShowFriendlyPlates", "0")
+-- New Advantageous PvP Settings
+SetAndVerifyCVar("cameraDistanceMaxZoomFactor", 2.6) -- Maximize FOV
+SetAndVerifyCVar("ActionButtonUseKeyDown", 1) -- Faster inputs
+SetAndVerifyCVar("nameplateOtherTopInset", 0.08) -- Clamp plates to screen
+SetAndVerifyCVar("nameplateOtherBottomInset", 0.1) -- Clamp plates to screen
+SetAndVerifyCVar("ffxglow", 0) -- Remove screen flash/clutter
 
-SetCVar("nameplateShowFriendlyNPCs", 0)
-Log("[GUI] ShowFriendlyNPC", "0")
-
-SetCVar("floatingCombatTextCombatHealing", 0)
-Log("[GUI] HideCombatHealing", "0")
-
--- 3. OPTIMIZATION LOGIC
+-- 4. OPTIMIZATION LOGIC
 local function OptimizeSettings(triggerSource)
   local _, _, _, worldLag = GetNetStats()
-
   if worldLag < 20 then
     worldLag = 20
   end
 
-  local tolerance = 100
-  local newSQW = worldLag + tolerance
-  SetCVar("SpellQueueWindow", newSQW)
-
+  -- For PvP maps, we use a tighter, more predictable window
   local isPvPInstance = C_PvP.IsPVPMap()
-  local pvpStatusText = isPvPInstance and Colorize("[PvP-Targetting]", "red") or Colorize("[PvE-Targetting]", "blue")
+  local tolerance = isPvPInstance and 80 or 100
+  local newSQW = worldLag + tolerance
 
-  -- Output using integrated colors
-  Log(pvpStatusText .. " (Src: " .. triggerSource .. ") | Latency: " .. worldLag .. "ms", "Queue: " .. newSQW .. "ms")
+  SetCVar("SpellQueueWindow", newSQW)
+  local actualSQW = GetCVar("SpellQueueWindow")
+
+  local pvpStatusText = isPvPInstance and Colorize("[PvP-Targetting]", "red") or Colorize("[PvE-Targetting]", "blue")
+  SetCVar("TargetPriorityPVP", isPvPInstance and 3 or 1)
+
+  -- Final Report
+  Log(
+    pvpStatusText .. " (Src: " .. triggerSource .. ") | Latency: " .. worldLag .. "ms",
+    "Queue: " .. actualSQW .. "ms"
+  )
 end
 
--- 4. EVENT LISTENER
+-- 5. EVENT LISTENER
 local f = CreateFrame("Frame")
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
 f:SetScript("OnEvent", function()
@@ -62,13 +76,13 @@ f:SetScript("OnEvent", function()
   end)
 end)
 
--- 5. SLASH COMMAND
+-- 6. SLASH COMMAND
 SLASH_AUTOSQW1 = "/sqw"
 SlashCmdList["AUTOSQW"] = function()
   OptimizeSettings("Manual")
 end
 
--- 6. AUTO MERCHANT
+-- 7. AUTO MERCHANT (Repair + Sell Greys)
 local m = CreateFrame("Frame")
 m:RegisterEvent("MERCHANT_SHOW")
 m:SetScript("OnEvent", function()
