@@ -1,4 +1,7 @@
 -- 1. COLOR & LOGGING HELPERS
+local setvarSuccess = 0
+local setvarFailed = 0
+
 local Colors = {
   green = "00ff00",
   blue = "00aaff",
@@ -19,25 +22,38 @@ local function Log(message, value)
 end
 
 -- 2. SMART SETTER HELPER
--- Sets the CVar, then retrieves it to verify the engine accepted it
 local function SetAndVerifyCVar(cvar, wants)
   SetCVar(cvar, wants)
-  -- Ensure both are treated as numbers for comparison
-  local has = tonumber(GetCVar(cvar)) or 0
-  local target = tonumber(wants) or 0
 
-  if has ~= target then
-    Log(cvar .. " Has: ", has)
-    Log(cvar .. " Wants: ", target)
+  local has = GetCVar(cvar)
+  local hasNum = tonumber(has)
+  local targetNum = tonumber(wants)
+
+  -- Verification Logic
+  local match = false
+  if hasNum and targetNum then
+    -- Float tolerance
+    if math.abs(hasNum - targetNum) < 0.001 then
+      match = true
+    end
+  elseif tostring(has) == tostring(wants) then
+    match = true
   end
-end
 
--- 3. INITIALIZATION & PVP OPTIMIZATIONS
-Log("Loading MySettings... have a wonderful time hunting")
+  if not match then
+    local errMsg = string.format("%s Failed! Has: %s | Wants: %s", cvar, tostring(has), tostring(wants))
+
+    -- FIX: Colorize the string first, and do not pass a second argument
+    Log(Colorize(errMsg, "red"))
+    setvarFailed = setvarFailed + 1
+  end
+  setvarSuccess = setvarSuccess + 1
+end -- 3. INITIALIZATION & PVP OPTIMIZATIONS
+
+Log("Loading MySettings... Happy Hunting!")
 
 -- Original GUI Settings
 SetAndVerifyCVar("nameplateOverlapV", "0.28")
-SetAndVerifyCVar("floatingCombatTextCombatHealing", 0)
 
 -- New Advantageous PvP Settings
 SetAndVerifyCVar("cameraDistanceMaxZoomFactor", 2.6) -- Maximize FOV
@@ -56,7 +72,6 @@ SetAndVerifyCVar("noBuffDebuffFilterOnTarget", 1)
 SetAndVerifyCVar("cameraSmoothStyle", 0) -- Disable auto-camera adjust
 SetAndVerifyCVar("violenceLevel", 5) -- Maximize blood (helps visual hit confirmation)
 SetAndVerifyCVar("UberTooltips", 1) -- Show full spell info in combat
-SetAndVerifyCVar("flicker", 0) -- Reduce flickering textures
 -- Stop nameplates from scaling based on distance (keep them consistent)
 SetAndVerifyCVar("nameplateMinScale", 1)
 SetAndVerifyCVar("nameplateMaxScale", 1)
@@ -81,7 +96,8 @@ local function OptimizeSettings(triggerSource)
   local actualSQW = GetCVar("SpellQueueWindow")
 
   local pvpStatusText = isPvPInstance and Colorize("[PvP-Targetting]", "red") or Colorize("[PvE-Targetting]", "blue")
-  SetCVar("TargetPriorityPVP", isPvPInstance and 3 or 1)
+  SetCVar("TargetPriorityPvp", isPvPInstance and 3 or 1)
+  -- SetAndVerifyCVar("TargetPriorityPVP", isPvPInstance and 3 or 1)
 
   -- Final Report
   Log(
@@ -151,3 +167,7 @@ q:SetScript("OnEvent", function(self, event)
     -- end
   end
 end)
+
+local done = string.format("Set %s settings Successfully!, with %s errors", setvarSuccess, setvarFailed)
+
+Log(Colorize(done, "yellow"))
