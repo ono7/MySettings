@@ -20,11 +20,16 @@ end
 
 -- 2. SMART SETTER HELPER
 -- Sets the CVar, then retrieves it to verify the engine accepted it
-local function SetAndVerifyCVar(cvar, value)
-  SetCVar(cvar, value)
-  Log("Setting: " .. cvar, value)
-  local actualValue = GetCVar(cvar)
-  Log("Actual: " .. cvar, actualValue)
+local function SetAndVerifyCVar(cvar, wants)
+  SetCVar(cvar, wants)
+  -- Ensure both are treated as numbers for comparison
+  local has = tonumber(GetCVar(cvar)) or 0
+  local target = tonumber(wants) or 0
+
+  if has ~= target then
+    Log(cvar .. " Has: ", has)
+    Log(cvar .. " Wants: ", target)
+  end
 end
 
 -- 3. INITIALIZATION & PVP OPTIMIZATIONS
@@ -48,6 +53,17 @@ SetAndVerifyCVar("nameplateSelectedScale", 1.65)
 -- SHOW ALL DEBUFFS: Ensures you see all your dots/CC on the target
 SetAndVerifyCVar("noBuffDebuffFilterOnTarget", 1)
 
+SetAndVerifyCVar("cameraSmoothStyle", 0) -- Disable auto-camera adjust
+SetAndVerifyCVar("violenceLevel", 5) -- Maximize blood (helps visual hit confirmation)
+SetAndVerifyCVar("UberTooltips", 1) -- Show full spell info in combat
+SetAndVerifyCVar("flicker", 0) -- Reduce flickering textures
+-- Stop nameplates from scaling based on distance (keep them consistent)
+SetAndVerifyCVar("nameplateMinScale", 1)
+SetAndVerifyCVar("nameplateMaxScale", 1)
+
+-- This speed up is subtle but noticeable over thousands of mobs
+SetAndVerifyCVar("autoLootDefault", 1)
+
 -- 4. OPTIMIZATION LOGIC
 local function OptimizeSettings(triggerSource)
   local _, _, _, worldLag = GetNetStats()
@@ -57,7 +73,8 @@ local function OptimizeSettings(triggerSource)
 
   -- For PvP maps, we use a tighter, more predictable window
   local isPvPInstance = C_PvP.IsPVPMap()
-  local tolerance = isPvPInstance and 80 or 100
+  -- local tolerance = isPvPInstance and 80 or 100
+  local tolerance = 80
   local newSQW = worldLag + tolerance
 
   SetCVar("SpellQueueWindow", newSQW)
@@ -107,5 +124,30 @@ m:SetScript("OnEvent", function()
         C_Container.UseContainerItem(bag, slot)
       end
     end
+  end
+end)
+
+local q = CreateFrame("Frame")
+q:RegisterEvent("GOSSIP_SHOW")
+q:RegisterEvent("QUEST_DETAIL")
+q:RegisterEvent("QUEST_PROGRESS")
+
+q:SetScript("OnEvent", function(self, event)
+  if IsShiftKeyDown() then
+    return
+  end -- Bypass with Shift
+
+  if event == "GOSSIP_SHOW" then
+    local options = C_GossipInfo.GetOptions()
+    if #options == 1 then
+      C_GossipInfo.SelectOption(options[1].gossipOptionID)
+    end
+  elseif event == "QUEST_DETAIL" then
+    AcceptQuest()
+  elseif event == "QUEST_PROGRESS" and IsQuestCompletable() then
+    CompleteQuest()
+    -- elseif event == "QUEST_COMPLETE" then
+    --   GetQuestReward(1) -- Selects first reward if multiple; careful with this
+    -- end
   end
 end)
