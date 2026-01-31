@@ -14,8 +14,9 @@ jobs:
         with:
           fetch-depth: 0 # Required for changelog generation
 
-      # BigWigsMods/packager@v2 is used because they have everything needed to create a release a publish
       - name: Package and Release
         uses: BigWigsMods/packager@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          args: -d
