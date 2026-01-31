@@ -22,9 +22,9 @@ end
 -- Sets the CVar, then retrieves it to verify the engine accepted it
 local function SetAndVerifyCVar(cvar, value)
   SetCVar(cvar, value)
-  Log("SET" .. cvar, actualValue)
+  Log("SET -> " .. cvar, value)
   local actualValue = GetCVar(cvar)
-  Log("ACTUAL" .. cvar, actualValue)
+  Log("ACTUAL -> " .. cvar, actualValue)
 end
 
 -- 3. INITIALIZATION & PVP OPTIMIZATIONS
