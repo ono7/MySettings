@@ -9,7 +9,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write # Critical for creating releases
 
     steps:
       - name: Clone project
@@ -20,6 +20,6 @@ jobs:
       - name: Package and Release
         uses: BigWigsMods/packager@v2
         env:
-          # The token must be in 'env', not 'with'
+          # Map BOTH variable names to ensure the script sees it
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # Note: We removed the 'with: args: -d' block entirely.
+          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
