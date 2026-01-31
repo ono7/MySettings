@@ -1,5 +1,16 @@
 -- 1. DEFINE THE LOGIC FUNCTION
 print("Loading MySettings... have a wonderful time hunting")
+
+local nameplateOverlapV = "0.28"
+SetCVar("nameplateOverlapV", nameplateOverlapV)
+print("|cff00ff00[GUI]|r nameplateOverlapV: " .. nameplateOverlapV)
+SetCVar("nameplateShowFriends", 0)
+print("|cff00ff00[GUI]|r ShowFriedlyPlates: " .. "0")
+SetCVar("nameplateShowFriendlyNPCs", 0)
+print("|cff00ff00[GUI]|r ShowFriendlyNPC: " .. "0")
+SetCVar("floatingCombatTextCombatHealing", 0)
+print("|cff00ff00[GUI]|r HideCombatHealing: " .. "0")
+
 local function OptimizeSettings(triggerSource)
   local _, _, _, worldLag = GetNetStats()
 
