@@ -9,7 +9,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Critical for creating releases
+      contents: write # Required for 'gh release create'
 
     steps:
       - name: Clone project
@@ -17,12 +17,23 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Package and Release
+      - name: Build Package (No Upload)
         uses: BigWigsMods/packager@v2
-        env:
-          # Map BOTH variable names to ensure the script sees it
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
         with:
-          # This flag tells it NOT to generate the extra metadata file
-          args: -n
+          # -d tells the packager to build the zip but SKIP the upload step
+          args: -d
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish Release (Zip Only)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 1. Identify the Zip file
+          zip_file=$(ls .release/*.zip | head -n 1)
+
+          # 2. Create Release using GitHub CLI
+          # We explicitly attach ONLY the zip file, ignoring release.json
+          gh release create ${{ github.ref_name }} "$zip_file" \
+            --title "${{ github.ref_name }}" \
+            --notes-file .release/CHANGELOG.md
