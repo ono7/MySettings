@@ -32,16 +32,15 @@ Log("Loading MySettings... have a wonderful time hunting")
 
 -- Original GUI Settings
 SetAndVerifyCVar("nameplateOverlapV", "0.28")
-SetAndVerifyCVar("nameplateShowFriends", 0)
-SetAndVerifyCVar("nameplateShowFriendlyNPCs", 0)
 SetAndVerifyCVar("floatingCombatTextCombatHealing", 0)
 
 -- New Advantageous PvP Settings
 SetAndVerifyCVar("cameraDistanceMaxZoomFactor", 2.6) -- Maximize FOV
 SetAndVerifyCVar("ActionButtonUseKeyDown", 1) -- Faster inputs
-SetAndVerifyCVar("nameplateOtherTopInset", 0.08) -- Clamp plates to screen
-SetAndVerifyCVar("nameplateOtherBottomInset", 0.1) -- Clamp plates to screen
 SetAndVerifyCVar("ffxglow", 0) -- Remove screen flash/clutter
+
+-- LOSS OF CONTROL: Shows the big CC icons in the middle of your screen
+SetAndVerifyCVar("lossOfControl", 1)
 
 -- 4. OPTIMIZATION LOGIC
 local function OptimizeSettings(triggerSource)
