@@ -42,6 +42,12 @@ SetAndVerifyCVar("ffxglow", 0) -- Remove screen flash/clutter
 -- LOSS OF CONTROL: Shows the big CC icons in the middle of your screen
 SetAndVerifyCVar("lossOfControl", 1)
 
+-- TARGET HIGHLIGHT: Increases the scale of your current target slightly
+SetAndVerifyCVar("nameplateSelectedScale", 1.65)
+
+-- SHOW ALL DEBUFFS: Ensures you see all your dots/CC on the target
+SetAndVerifyCVar("noBuffDebuffFilterOnTarget", 1)
+
 -- 4. OPTIMIZATION LOGIC
 local function OptimizeSettings(triggerSource)
   local _, _, _, worldLag = GetNetStats()
