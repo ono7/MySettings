@@ -92,7 +92,8 @@ local function OptimizeSettings(triggerSource)
   -- For PvP maps, we use a tighter, more predictable window
   local isPvPInstance = C_PvP.IsPVPMap()
   -- local tolerance = isPvPInstance and 80 or 100
-  local tolerance = 80
+  -- local tolerance = 80
+  local tolerance = 150
   local newSQW = worldLag + tolerance
 
   SetCVar("SpellQueueWindow", newSQW)
