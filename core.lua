@@ -79,6 +79,9 @@ SetAndVerifyCVar("nameplateMaxScale", 1)
 -- This speed up is subtle but noticeable over thousands of mobs
 SetAndVerifyCVar("autoLootDefault", 1)
 
+-- retail setting
+SetAndVerifyCVar("nameplateMaxDistance", 60)
+
 -- 4. OPTIMIZATION LOGIC
 local function OptimizeSettings(triggerSource)
   local _, _, _, worldLag = GetNetStats()
