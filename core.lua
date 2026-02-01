@@ -91,12 +91,12 @@ local function OptimizeSettings(triggerSource)
 
   -- For PvP maps, we use a tighter, more predictable window
   local isPvPInstance = C_PvP.IsPVPMap()
-  local tolerance = isPvPInstance and 80 or 100
+  -- local tolerance = isPvPInstance and 80 or 100
   -- local tolerance = 80
-  local tolerance = 100
+  local tolerance = 150
   local newSQW = worldLag + tolerance
 
-  if newSQW >= 300 then
+  if newSQW >= 250 then
     newSQW = 400
     local errMsg = string.format(">> HIGH LATENCY DETECTED << max SQW is now %s", tostring(newSQW))
     Log(Colorize(errMsg, "red"))
