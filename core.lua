@@ -76,6 +76,12 @@ SetAndVerifyCVar("UberTooltips", 1) -- Show full spell info in combat
 SetAndVerifyCVar("nameplateMinScale", 1)
 SetAndVerifyCVar("nameplateMaxScale", 1)
 
+-- disable error sounds
+SetAndVerifyCVar("Sound_EnableErrorSpeech", 0)
+
+-- Permanently disables red error text
+UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
+
 -- This speed up is subtle but noticeable over thousands of mobs
 SetAndVerifyCVar("autoLootDefault", 1)
 
@@ -93,7 +99,7 @@ local function OptimizeSettings(triggerSource)
   local isPvPInstance = C_PvP.IsPVPMap()
   -- local tolerance = isPvPInstance and 80 or 100
   -- local tolerance = 80
-  local tolerance = 150
+  local tolerance = 100
   local newSQW = worldLag + tolerance
 
   if newSQW >= 250 then
@@ -221,6 +227,14 @@ local function UpdateObjectiveTracker(event)
     if ObjectiveTrackerFrame.isCollapsed then
       ObjectiveTrackerFrame:SetCollapsed(false)
     end
+  end
+
+  if event == "PLAYER_REGEN_DISABLED" then
+    -- We are fighting: Kill the error message text
+    UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
+  else
+    -- We are safe: Bring it back so we can see bag errors etc.
+    UIErrorsFrame:RegisterEvent("UI_ERROR_MESSAGE")
   end
 end
 
