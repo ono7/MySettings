@@ -82,6 +82,9 @@ local cvars = {
   AutoPushSpellToActionBar = "0", -- dont automatically add new spells to castbars
   UnitNamePlayerGuild = "0", -- remove guild names
   UnitNamePlayerPVPTitle = "0", -- remove pvp titles
+  countdownForCooldowns = "1", -- NUMBERS: Shows "3, 2, 1" on icons instead of just a clock swipe
+  pvpFramesDisplayClassColor = "1", -- shows class colors
+  nameplateShowOnlyNameForFriendlyPlayerUnits = "1", -- only show name for friendies
 }
 
 local current = C_CVar.GetCVar("ResampleAlwaysSharpen")
