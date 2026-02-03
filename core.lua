@@ -235,7 +235,8 @@ Events:SetScript("OnEvent", function(self, event, ...)
     local inCombat = (event == "PLAYER_REGEN_DISABLED")
 
     -- Toggle Circle Highlight
-    C_CVar.SetCVar("SelfHighlight", inCombat and "1" or "0")
+    C_CVar.SetCVar("findYourSelfAnywhere", inCombat and "1" or "0")
+    C_CVar.SetCVar("findYourSelfModeCircle", inCombat and "1" or "0")
 
     -- Hide Minimap Cluster
     if MinimapCluster then
