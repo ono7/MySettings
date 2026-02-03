@@ -236,8 +236,10 @@ Events:SetScript("OnEvent", function(self, event, ...)
     C_CVar.SetCVar("findYourSelfModeCircle", inCombat and "1" or "0")
 
     -- Hide Minimap Cluster
-    if MinimapCluster then
-      MinimapCluster:SetShown(not inCombat)
+    if not C_PvP.IsPVPMap() then
+      if MinimapCluster then
+        MinimapCluster:SetShown(not inCombat)
+      end
     end
 
     -- Manage Objective Tracker
