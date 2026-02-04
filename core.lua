@@ -114,18 +114,24 @@ f:SetScript("OnEvent", function()
   local settings = {
     renderscale = IsMacClient() and "0.69" or "0.999",
     graphicsComputeEffects = IsMacClient() and "0" or "0", -- 0=Disabled (Mac), 4=Ultra (Win)
-    RAIDgraphicsComputeEffects = function()
-      return "0"
-    end, -- always disable
+    RAIDgraphicsComputeEffects = "0", -- always disable this for better performance
     -- outlineMode = "3", -- High (Essential for spotting targets in chaos)
     graphicsParticleDensity = "4", -- High (MANDATORY: Never set Low, or you won't see Ring of Frost/Traps)
     projectedTextures = "1", -- Enabled (MANDATORY: Renders ground effects)
 
     -- [3. Visual Clarity & FPS Savings (Remove "Eye Candy")]
-    gxTripleBuffer = "0", -- Disabled (Reduces input latency)
+    -- gxTripleBuffer = "0", -- Disabled (Reduces input latency) -- TODO(jlima): fix
+    GxAllowCachelessShaderMode = "0", -- dont use hdd/ssd for caching (use ram)
     graphicsDepthEffects = "0", -- Disabled (Removes blur/depth of field; improves clarity)
     graphicsSSAO = "0", -- Disabled (Ambient Occlusion; expensive shadow shading)
     graphicsShadowQuality = "0", -- Low (Shadows are the #1 FPS killer in raids/BGs)
+    Contrast = "70", -- better visuals
+    projectedTextures = "1", -- always
+    graphicsGroundClutter = "0", -- less junk on the floor
+    graphicsLiquidDetail = "0",
+    graphicsShadowQuality = "0",
+    volumeFogLevel = "0",
+    Sound_NumChannels = "128",
     graphicsLiquidDetail = "0", -- Low (Water quality; zero competitive value)
     weatherDensity = "0", -- Disabled (Rain/Snow distracts from spell cues)
     ffxGlow = "0", -- Disabled (Removes full-screen bloom/glare)
