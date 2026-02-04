@@ -275,12 +275,13 @@ Events:SetScript("OnEvent", function(self, event, ...)
     C_CVar.SetCVar("findYourSelfModeCircle", inCombat and "1" or "0")
     C_CVar.SetCVar("findYourSelfModeOutline", inCombat and "1" or "0")
 
+    -- we need minimap turns out... specially in some bgs
     -- Hide Minimap Cluster
-    if C_PvP.IsPVPMap() then
-      if MinimapCluster then
-        MinimapCluster:SetShown(not inCombat)
-      end
-    end
+    -- if C_PvP.IsPVPMap() then
+    --   if MinimapCluster then
+    --     MinimapCluster:SetShown(not inCombat)
+    --   end
+    -- end
 
     -- Manage Objective Tracker
     if ObjectiveTrackerFrame then
