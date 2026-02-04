@@ -105,7 +105,14 @@ if current ~= "1" then
   SetAndVerifyCVar("ResampleAlwaysSharpen", "1")
 end
 
+-- Default to Windows value
 local desired = "0.999"
+
+-- If on Mac, override to 0.69
+if IsMacClient() then
+  desired = "0.69"
+end
+
 -- GetCVar returns a string, comparison must be exact
 if C_CVar.GetCVar("renderscale") ~= desired then
   SetAndVerifyCVar("renderscale", desired)
