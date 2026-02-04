@@ -174,7 +174,7 @@ local Events = CreateFrame("Frame")
 Events:RegisterEvent("PLAYER_ENTERING_WORLD")
 Events:RegisterEvent("MERCHANT_SHOW")
 Events:RegisterEvent("GOSSIP_SHOW")
-Events:RegisterEvent("QUEST_DETAIL")
+-- Events:RegisterEvent("QUEST_DETAIL")
 Events:RegisterEvent("QUEST_PROGRESS")
 Events:RegisterEvent("PLAYER_REGEN_DISABLED")
 Events:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -210,22 +210,22 @@ Events:SetScript("OnEvent", function(self, event, ...)
       end
     end
 
-  -- C. Auto Quest (Retail C_GossipInfo API)
-  elseif event == "GOSSIP_SHOW" or event == "QUEST_DETAIL" or event == "QUEST_PROGRESS" then
-    if IsShiftKeyDown() then
-      return
-    end
-
-    if event == "GOSSIP_SHOW" then
-      local options = C_GossipInfo.GetOptions()
-      if #options == 1 then
-        C_GossipInfo.SelectOption(options[1].gossipOptionID)
-      end
-    elseif event == "QUEST_DETAIL" then
-      AcceptQuest()
-    elseif event == "QUEST_PROGRESS" and IsQuestCompletable() then
-      CompleteQuest()
-    end
+  -- -- C. Auto Quest (Retail C_GossipInfo API)
+  -- elseif event == "GOSSIP_SHOW" or event == "QUEST_DETAIL" or event == "QUEST_PROGRESS" then
+  --   if IsShiftKeyDown() then
+  --     return
+  --   end
+  --
+  --   if event == "GOSSIP_SHOW" then
+  --     local options = C_GossipInfo.GetOptions()
+  --     if #options == 1 then
+  --       C_GossipInfo.SelectOption(options[1].gossipOptionID)
+  --     end
+  --   elseif event == "QUEST_DETAIL" then
+  --     AcceptQuest()
+  --   elseif event == "QUEST_PROGRESS" and IsQuestCompletable() then
+  --     CompleteQuest()
+  --   end
 
   -- D. Combat UI Toggles
   elseif event == "PLAYER_REGEN_DISABLED" or event == "PLAYER_REGEN_ENABLED" then
@@ -236,7 +236,7 @@ Events:SetScript("OnEvent", function(self, event, ...)
     C_CVar.SetCVar("findYourSelfModeCircle", inCombat and "1" or "0")
 
     -- Hide Minimap Cluster
-    if not C_PvP.IsPVPMap() then
+    if C_PvP.IsPVPMap() then
       if MinimapCluster then
         MinimapCluster:SetShown(not inCombat)
       end
