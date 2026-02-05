@@ -50,6 +50,7 @@ local function Log(message, value)
   print(prefix .. " " .. message .. suffix)
 end
 
+-- this returns 4 values, comma separated, adding {} will make them into a table
 local buildData = { GetBuildInfo() }
 
 Log(Colorize(string.format(">>> Game version: %s <<<", buildData[1]), "blue"))
