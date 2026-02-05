@@ -63,29 +63,33 @@ end
 Log("Loading MySettings...")
 
 local cvars = {
-  nameplateOverlapV = "0.28",
+  -- nameplateOverlapV = "0.28",
+  nameplateOverlapH = "0.28",
+  nameplateOverlapV = "1",
+  nameplateSize = "2",
+  nameplateSelectedScale = "1.10", -- target nameplate size
+  nameplateMaxScale = "0.7",
+  nameplateMinScale = "1",
+  nameplateMaxScale = "1",
+  nameplateMaxDistance = "60",
+  nameplateShowOnlyNameForFriendlyPlayerUnits = "1", -- only show name for friendies
   cameraDistanceMaxZoomFactor = "2.6",
   CameraReduceUnexpectedMovement = "1",
   TargetPriorityPvp = "3", -- prioritize player over pet
   ActionButtonUseKeyDown = "1",
   ffxglow = "0",
   lossOfControl = "1", -- show when im stunned
-  nameplateSelectedScale = "1.75", -- target nameplate size
   -- noBuffDebuffFilterOnTarget = "1", -- does not apply important filter to target frame
   cameraSmoothStyle = "0", -- more responsive camara instead of smoothing and following behind
   violenceLevel = "5", -- more blood
   UberTooltips = "1", -- additional details
-  nameplateMinScale = "1",
-  nameplateMaxScale = "1",
   Sound_EnableErrorSpeech = "0",
   autoLootDefault = "1",
-  nameplateMaxDistance = "60",
   UnitNamePlayerGuild = "0", -- remove guild names
   UnitNamePlayerPVPTitle = "0", -- remove pvp titles
   graphicsComputeEffects = "0", -- disabled
   countdownForCooldowns = "1", -- NUMBERS: Shows "3, 2, 1" on icons instead of just a clock swipe
   pvpFramesDisplayClassColor = "1", -- shows class colors
-  nameplateShowOnlyNameForFriendlyPlayerUnits = "1", -- only show name for friendies
   softTargetEnemy = "1", -- automatically targets enemies you face if you have no target
   softTargetIconEnemy = "1", -- Show a distinct icon over the "Soft Target" so you know who you will hit
 }
