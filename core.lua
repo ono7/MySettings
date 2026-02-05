@@ -244,7 +244,7 @@ local function OptimizeConnection(source)
 
   SetAndVerifyCVar("SpellQueueWindow", newSQW)
 
-  local isPvP = C_PvP.IsPVPMap()
+  -- local isPvP = C_PvP.IsPVPMap()
   -- SetAndVerifyCVar("TargetPriorityPvp", isPvP and 3 or 1)
 
   Log(
