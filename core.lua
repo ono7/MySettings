@@ -129,7 +129,7 @@ local cvars = {
   countdownForCooldowns = "1", -- NUMBERS: Shows "3, 2, 1" on icons instead of just a clock swipe
   pvpFramesDisplayClassColor = "1", -- shows class colors
   -- softTargetEnemy = "1", -- automatically targets enemies you face if you have no target
-  stickyTargeting = "1", -- clicking on the ground will not remove target
+  targetAutoLock = "1", -- clicking on the ground will not remove target
   softTargetIconEnemy = "1", -- Show a distinct icon over the "Soft Target" so you know who you will hit
 }
 
