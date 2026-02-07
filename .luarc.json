@@ -1,0 +1,11 @@
+{
+  "Lua.runtime.version": "LuaJIT",
+  "Lua.workspace.library": [
+    "~/workspace/wow-api/Annotations",
+    "~/workspace/wow-ui-source"
+  ],
+  "Lua.diagnostics.globals": ["UIParent", "ViragDevTool"],
+  "Lua.workspace.checkThirdParty": false,
+  "Lua.workspace.maxPreload": 10000,
+  "Lua.workspace.preloadFileSize": 5000
+}
