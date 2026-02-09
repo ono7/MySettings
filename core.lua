@@ -96,23 +96,21 @@ end
 Log("Loading MySettings...")
 
 local cvars = {
-  -- nameplateOverlapV = "0.28",
-  nameplateOverlapH = "0.38",
-  nameplateOverlapV = "1",
+  nameplateOverlapH = "1",
+  nameplateOverlapV = "0.35",
   nameplateSize = "2",
-  nameplateSelectedScale = "1.10", -- target nameplate size
+  nameplateSelectedScale = "1", -- target nameplate size
   nameplateMaxScale = "0.7",
   nameplateMinScale = "0.4",
   nameplateMaxDistance = "60",
   showTutorials = "0", -- disable tutorials = 0, enable = 1
-  nameplateShowOnlyNameForFriendlyPlayerUnits = "1", -- only show name for friendies
   cameraDistanceMaxZoomFactor = "2.6",
   CameraReduceUnexpectedMovement = "1",
   assistedCombatHighlight = "1", --- should highlight the next spell that should be sent in combat
   TargetPriorityPvp = "3", -- prioritize player over pet
   bankConfirmTabCleanUp = "0", -- no confirmation when autocleaning up bags
   alwaysCompareItems = "1", -- always compare items with tooltips
-  -- cursorSizePreferred = "2", -- based on dpi, but maybe too small on high dpi values -1 (auto) - 4 (largest)
+  cursorSizePreferred = "3", -- based on dpi, but maybe too small on high dpi values -1 (auto) - 4 (largest)
   enablePVPNotifyAFK = "0", -- ability to shutdown the afk notification system in pvp
   ActionButtonUseKeyDown = "1",
   ffxglow = "0",
