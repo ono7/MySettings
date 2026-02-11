@@ -139,7 +139,9 @@ event:RegisterEvent("VOICE_CHAT_OUTPUT_DEVICES_UPDATED")
 event:SetScript("OnEvent", function()
   if not CinematicFrame:IsShown() and not MovieFrame:IsShown() then -- Dont restart sound system during cinematic
     SetCVar("Sound_OutputDriverIndex", "0")
+
     Sound_GameSystem_RestartSoundSystem()
+    print("|cff00ff00[MySettings]|r New sound source detected!")
   end
 end)
 
