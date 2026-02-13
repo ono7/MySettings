@@ -101,6 +101,7 @@ local cvars = {
   nameplateSize = "2",
   nameplateSelectedScale = "1", -- target nameplate size
   nameplateMaxScale = "0.7",
+  deselectOnClick = "0", -- sticky targetting
   nameplateMinScale = "0.4",
   nameplateMaxDistance = "60",
   showTutorials = "0", -- disable tutorials = 0, enable = 1
