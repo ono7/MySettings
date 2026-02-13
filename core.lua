@@ -100,6 +100,7 @@ local cvars = {
   nameplateOverlapV = "0.35",
   nameplateSize = "2",
   nameplateSelectedScale = "1", -- target nameplate size
+  targetSticky = "1", -- prevent switching target accidentally by clicking on the ground
   nameplateMaxScale = "0.7",
   nameplateMinScale = "0.4",
   nameplateMaxDistance = "60",
