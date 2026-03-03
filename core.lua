@@ -1,9 +1,11 @@
 --[[
 
 /etrace
+
 For addon debugging: Open an in-game window containing a live-updating event log of all events happening in your game (clicks, movement, mouseovers, chats, combatevents, players running in and out of render distance, etc.:
 
 /fstack
+
 For UI debugging. Type this command to mouseover any UI element to highlight its length/width, layer, name and parent element.
 
 ]]
@@ -122,6 +124,7 @@ local cvars = {
   ActionButtonUseKeyDown = "1",
   ffxglow = "0",
   lossOfControl = "1", -- show when im stunned
+  -- noBuffDebuffFilterOnTarget = "1", -- does not apply important filter to target frame
   cameraSmoothStyle = "0", -- more responsive camara instead of smoothing and following behind
   violenceLevel = "5", -- more blood
   UberTooltips = "1", -- additional details
@@ -132,25 +135,22 @@ local cvars = {
   graphicsComputeEffects = "0", -- disabled
   countdownForCooldowns = "1", -- NUMBERS: Shows "3, 2, 1" on icons instead of just a clock swipe
   pvpFramesDisplayClassColor = "1", -- shows class colors
+  -- softTargetEnemy = "1", -- automatically targets enemies you face if you have no target
+  -- targetAutoLock = "1", -- clicking on the ground will not remove target
   softTargetIconEnemy = "1", -- Show a distinct icon over the "Soft Target" so you know who you will hit
+  -- TargetPriorityCombatLock = "2", -- adds combat lock agains player enemies/pvp
 }
 
--- change audio output device automatically when it changes (FIXED MEMORY LEAK)
+-- change audio output device automatically when it changes
 SetAndVerifyCVar("Sound_OutputDriverIndex", "0")
-local lastSoundRestart = 0
-local audioEvent = CreateFrame("Frame")
-audioEvent:RegisterEvent("VOICE_CHAT_OUTPUT_DEVICES_UPDATED")
-audioEvent:SetScript("OnEvent", function()
-  if CinematicFrame:IsShown() or MovieFrame:IsShown() then
-    return
-  end
+local event = CreateFrame("FRAME")
+event:RegisterEvent("VOICE_CHAT_OUTPUT_DEVICES_UPDATED")
+event:SetScript("OnEvent", function()
+  if not CinematicFrame:IsShown() and not MovieFrame:IsShown() then -- Dont restart sound system during cinematic
+    SetCVar("Sound_OutputDriverIndex", "0")
 
-  local now = GetTime()
-  if now - lastSoundRestart > 5 then
-    lastSoundRestart = now
-    SetAndVerifyCVar("Sound_OutputDriverIndex", "0")
     Sound_GameSystem_RestartSoundSystem()
-    Log("New sound source detected", "Audio Restarted")
+    print("|cff00ff00[MySettings]|r New sound source detected!")
   end
 end)
 
@@ -164,12 +164,17 @@ local f = CreateFrame("Frame")
 f:RegisterEvent("PLAYER_LOGIN")
 f:SetScript("OnEvent", function()
   -- 1. Define Configuration (OS-Separated)
+  -- Value mapping: IsMacClient() and <MacValue> or <WindowsValue>
   local settings = {
     renderscale = IsMacClient() and "0.69" or "0.999",
-    graphicsComputeEffects = "0", -- 0=Disabled (Mac), 4=Ultra (Win) (Standardized to 0 for comp)
+    graphicsComputeEffects = IsMacClient() and "0" or "0", -- 0=Disabled (Mac), 4=Ultra (Win)
     RAIDgraphicsComputeEffects = "0", -- always disable this for better performance
+    -- outlineMode = "3", -- High (Essential for spotting targets in chaos)
     graphicsParticleDensity = "4", -- High (MANDATORY: Never set Low, or you won't see Ring of Frost/Traps)
     projectedTextures = "1", -- Enabled (MANDATORY: Renders ground effects)
+
+    -- [3. Visual Clarity & FPS Savings (Remove "Eye Candy")]
+    -- gxTripleBuffer = "0", -- Disabled (Reduces input latency) -- TODO(jlima): fix
     GxAllowCachelessShaderMode = "0", -- dont use hdd/ssd for caching (use ram)
     graphicsDepthEffects = "0", -- Disabled (Removes blur/depth of field; improves clarity)
     graphicsSSAO = "0", -- Disabled (Ambient Occlusion; expensive shadow shading)
@@ -187,8 +192,12 @@ f:SetScript("OnEvent", function()
   -- 2. Enforce Configuration
   for cvar, desired in pairs(settings) do
     if C_CVar.GetCVar(cvar) ~= desired then
-      SetAndVerifyCVar(cvar, desired)
-      Log("Login CVar Set", cvar .. ": " .. desired)
+      if SetAndVerifyCVar then
+        SetAndVerifyCVar(cvar, desired)
+      else
+        C_CVar.SetCVar(cvar, desired)
+      end
+      print("|cff00ff00[MySettings]|r Set " .. cvar .. ": " .. desired)
     end
   end
 end)
@@ -236,18 +245,16 @@ local function OptimizeConnection(source)
     Log(Colorize("High Latency (" .. worldLag .. ") - Capping SQW at 400", "red"))
   end
 
-  SetAndVerifyCVar("SpellQueueWindow", tostring(newSQW))
+  SetAndVerifyCVar("SpellQueueWindow", newSQW)
 
-  Log(
-    string.format("%s (Src: %s) | Latency: %dms", Colorize("SpellQueue", "white"), source, worldLag),
-    "SQW: " .. newSQW
-  )
+  Log(string.format("%s (Src: %s) | Latency: %dms", Colorize("SpellQueue"), source, worldLag), "SQW: " .. newSQW)
 end
 
 -- 4. UNIFIED EVENT HANDLER
 local Events = CreateFrame("Frame")
 Events:RegisterEvent("PLAYER_ENTERING_WORLD")
 Events:RegisterEvent("MERCHANT_SHOW")
+Events:RegisterEvent("QUEST_PROGRESS")
 Events:RegisterEvent("PLAYER_REGEN_DISABLED")
 Events:RegisterEvent("PLAYER_REGEN_ENABLED")
 Events:RegisterEvent("PLAYER_DEAD")
