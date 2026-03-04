@@ -50,6 +50,14 @@ local function Log(message, value)
   print(prefix .. " " .. message .. suffix)
 end
 
+-- TRACKER TOGGLE STATE
+local autoHideTracker = true
+SLASH_MYSETTINGS_TRACKER1 = "/tracker"
+SlashCmdList["MYSETTINGS_TRACKER"] = function()
+  autoHideTracker = not autoHideTracker
+  Log("Combat Tracker Auto-Hide", autoHideTracker and "ON" or "OFF")
+end
+
 -- this returns 4 values, comma separated, adding {} will make them into a table
 local buildData = { GetBuildInfo() }
 
@@ -194,19 +202,6 @@ f:SetScript("OnEvent", function()
   end
 end)
 
--- -- Default to Windows value
--- local desired = "0.999"
---
--- -- If on Mac, override to 0.69
--- if IsMacClient() then
---   desired = "0.69"
--- end
---
--- -- GetCVar returns a string, comparison must be exact
--- if C_CVar.GetCVar("renderscale") ~= desired then
---   SetAndVerifyCVar("renderscale", desired)
--- end
-
 --- applies settings unconditionally on /reload
 for cvar, val in pairs(cvars) do
   SetAndVerifyCVar(cvar, val)
@@ -252,30 +247,17 @@ local function OptimizeConnection(source)
 
   SetAndVerifyCVar("SpellQueueWindow", newSQW)
 
-  -- local isPvP = C_PvP.IsPVPMap()
-  -- SetAndVerifyCVar("TargetPriorityPvp", isPvP and 3 or 1)
-
-  Log(
-    string.format(
-      "%s (Src: %s) | Latency: %dms",
-      -- isPvP and Colorize("[PvP]", "red") or Colorize("[PvE]", "blue"),
-      Colorize("SpellQueue"),
-      source,
-      worldLag
-    ),
-    "SQW: " .. newSQW
-  )
+  Log(string.format("%s (Src: %s) | Latency: %dms", Colorize("SpellQueue"), source, worldLag), "SQW: " .. newSQW)
 end
 
 -- 4. UNIFIED EVENT HANDLER
 local Events = CreateFrame("Frame")
 Events:RegisterEvent("PLAYER_ENTERING_WORLD")
 Events:RegisterEvent("MERCHANT_SHOW")
-Events:RegisterEvent("GOSSIP_SHOW")
--- Events:RegisterEvent("QUEST_DETAIL")
 Events:RegisterEvent("QUEST_PROGRESS")
 Events:RegisterEvent("PLAYER_REGEN_DISABLED")
 Events:RegisterEvent("PLAYER_REGEN_ENABLED")
+Events:RegisterEvent("PLAYER_DEAD")
 
 Events:SetScript("OnEvent", function(self, event, ...)
   -- A. Connection Optimization (Polls for valid latency)
@@ -314,22 +296,13 @@ Events:SetScript("OnEvent", function(self, event, ...)
 
     -- Toggle Circle Highlight
     C_CVar.SetCVar("findYourSelfAnywhere", inCombat and "1" or "0")
-    -- C_CVar.SetCVar("findYourselfAnywhereOnlyInCombat", 1)
     C_CVar.SetCVar("findYourSelfModeCircle", inCombat and "1" or "0")
     C_CVar.SetCVar("findYourSelfModeOutline", inCombat and "1" or "0")
-
-    -- we need minimap turns out... specially in some bgs
-    -- Hide Minimap Cluster
-    -- if C_PvP.IsPVPMap() then
-    --   if MinimapCluster then
-    --     MinimapCluster:SetShown(not inCombat)
-    --   end
-    -- end
 
     -- Manage Objective Tracker
     if ObjectiveTrackerFrame then
       if inCombat then
-        if not ObjectiveTrackerFrame.isCollapsed then
+        if autoHideTracker and not ObjectiveTrackerFrame.isCollapsed then
           ObjectiveTrackerFrame:SetCollapsed(true)
         end
       else
@@ -337,6 +310,14 @@ Events:SetScript("OnEvent", function(self, event, ...)
           ObjectiveTrackerFrame:SetCollapsed(false)
         end
       end
+    end
+
+  -- E. Auto-Release in PvP
+  elseif event == "PLAYER_DEAD" then
+    local inInstance, instanceType = IsInInstance()
+    if inInstance and (instanceType == "pvp" or instanceType == "arena") then
+      RepopMe()
+      Log("Auto-Released", "PvP Instance")
     end
   end
 end)
