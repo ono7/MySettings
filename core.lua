@@ -119,7 +119,7 @@ local cvars = {
   TargetPriorityPvp = "3", -- prioritize player over pet
   bankConfirmTabCleanUp = "0", -- no confirmation when autocleaning up bags
   alwaysCompareItems = "1", -- always compare items with tooltips
-  cursorSizePreferred = "3", -- based on dpi, but maybe too small on high dpi values -1 (auto) - 4 (largest)
+  -- cursorSizePreferred = "-1", -- based on dpi, but maybe too small on high dpi values -1 (auto) - 4 (largest)
   enablePVPNotifyAFK = "0", -- ability to shutdown the afk notification system in pvp
   ActionButtonUseKeyDown = "1",
   ffxglow = "0",
@@ -167,6 +167,7 @@ f:SetScript("OnEvent", function()
   -- Value mapping: IsMacClient() and <MacValue> or <WindowsValue>
   local settings = {
     renderscale = IsMacClient() and "0.69" or "0.999",
+    -- renderscale = "0.999",
     graphicsComputeEffects = IsMacClient() and "0" or "0", -- 0=Disabled (Mac), 4=Ultra (Win)
     RAIDgraphicsComputeEffects = "0", -- always disable this for better performance
     -- outlineMode = "3", -- High (Essential for spotting targets in chaos)
