@@ -166,7 +166,7 @@ f:SetScript("OnEvent", function()
   -- 1. Define Configuration (OS-Separated)
   -- Value mapping: IsMacClient() and <MacValue> or <WindowsValue>
   local settings = {
-    renderscale = IsMacClient() and "0.69" or "0.999",
+    renderscale = IsMacClient() and "0.75" or "0.999",
     -- renderscale = "0.999",
     graphicsComputeEffects = IsMacClient() and "0" or "0", -- 0=Disabled (Mac), 4=Ultra (Win)
     RAIDgraphicsComputeEffects = "0", -- always disable this for better performance
@@ -179,7 +179,7 @@ f:SetScript("OnEvent", function()
     GxAllowCachelessShaderMode = "0", -- dont use hdd/ssd for caching (use ram)
     graphicsDepthEffects = "0", -- Disabled (Removes blur/depth of field; improves clarity)
     graphicsSSAO = "0", -- Disabled (Ambient Occlusion; expensive shadow shading)
-    Contrast = "70", -- better visuals
+    Contrast = "55", -- better visuals
     graphicsGroundClutter = "0", -- less junk on the floor
     graphicsShadowQuality = "0",
     volumeFogLevel = "0",
