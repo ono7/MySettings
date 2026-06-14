@@ -179,7 +179,7 @@ f:SetScript("OnEvent", function()
     GxAllowCachelessShaderMode = "0", -- dont use hdd/ssd for caching (use ram)
     graphicsDepthEffects = "0", -- Disabled (Removes blur/depth of field; improves clarity)
     graphicsSSAO = "0", -- Disabled (Ambient Occlusion; expensive shadow shading)
-    Contrast = "70", -- better visuals
+    Contrast = "65", -- better visuals
     graphicsGroundClutter = "0", -- less junk on the floor
     graphicsShadowQuality = "0",
     volumeFogLevel = "0",
