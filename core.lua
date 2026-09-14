@@ -157,10 +157,10 @@ local baseCVars = {
   nameplateShowFriendlyNPCs = "0",
 
   -- NOTE(jlima): Nameplate sizing, scale bounding, and hit-box dimensions.
-  nameplateSize = "2",
-  nameplateSelectedScale = "1",
-  nameplateMaxScale = "0.7",
-  nameplateMinScale = "0.4",
+  -- nameplateSize = "2",
+  -- nameplateSelectedScale = "1",
+  -- nameplateMaxScale = "0.7",
+  -- nameplateMinScale = "0.4",
   nameplateOverlapH = "1",
   nameplateOverlapV = "0.35",
 
