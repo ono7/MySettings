@@ -213,26 +213,106 @@ local function OptimizeConnection(source)
 end
 
 -- 3. OBJECTIVE TRACKER DISPATCHER
--- NOTE(jlima): collapse-only workflow; state is never programmatically expanded once collapsed
-local function CollapseTracker()
+local inCombatCollapsed = false
+
+local function GetTrackerContentFrame()
+  if ObjectiveTrackerBlocksFrame then
+    return ObjectiveTrackerBlocksFrame
+  elseif ObjectiveTrackerFrame and ObjectiveTrackerFrame.GetScrollChild then
+    return ObjectiveTrackerFrame:GetScrollChild()
+  elseif ObjectiveTrackerFrame and ObjectiveTrackerFrame.BlocksFrame then
+    return ObjectiveTrackerFrame.BlocksFrame
+  elseif ObjectiveTrackerFrame and ObjectiveTrackerFrame.Container then
+    return ObjectiveTrackerFrame.Container
+  end
+  return nil
+end
+
+local function GetMinimizeButton()
+  return ObjectiveTrackerFrame and ObjectiveTrackerFrame.HeaderMenu and ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
+end
+
+local function SetNativeTrackerCollapsed(collapsed)
   if not ObjectiveTrackerFrame then
     return
   end
-
-  local isCollapsed = false
-  if ObjectiveTrackerFrame.IsCollapsed then
-    isCollapsed = ObjectiveTrackerFrame:IsCollapsed()
-  elseif ObjectiveTrackerFrame.isCollapsed ~= nil then
-    isCollapsed = ObjectiveTrackerFrame.isCollapsed
+  if ObjectiveTrackerFrame.SetIsCollapsed then
+    ObjectiveTrackerFrame:SetIsCollapsed(collapsed)
+  elseif ObjectiveTrackerFrame.SetCollapsed then
+    ObjectiveTrackerFrame:SetCollapsed(collapsed)
   end
+end
 
-  if not isCollapsed then
-    if ObjectiveTrackerFrame.SetIsCollapsed then
-      ObjectiveTrackerFrame:SetIsCollapsed(true)
-    elseif ObjectiveTrackerFrame.SetCollapsed then
-      ObjectiveTrackerFrame:SetCollapsed(true)
+local function IsNativeTrackerCollapsed()
+  if not ObjectiveTrackerFrame then
+    return false
+  end
+  if ObjectiveTrackerFrame.IsCollapsed then
+    return ObjectiveTrackerFrame:IsCollapsed()
+  elseif ObjectiveTrackerFrame.isCollapsed ~= nil then
+    return ObjectiveTrackerFrame.isCollapsed
+  end
+  return false
+end
+
+local function SetCombatVisualState(collapsed)
+  inCombatCollapsed = collapsed
+
+  -- NOTE(jlima): Gate alpha and click routing on the content container; bypasses protected frame show/hide lockdown.
+  local content = GetTrackerContentFrame()
+  if content then
+    content:SetAlpha(collapsed and 0 or 1)
+    if content.SetMouseClickThrough then
+      content:SetMouseClickThrough(collapsed)
     end
   end
+
+  local minBtn = GetMinimizeButton()
+  if minBtn and minBtn.SetCollapsed then
+    minBtn:SetCollapsed(collapsed)
+  end
+end
+
+local function CollapseTracker()
+  if InCombatLockdown() then
+    -- NOTE(jlima): Mutating ObjectiveTrackerFrame directly in combat taints EditMode anchors and protected quest buttons; use visual opacity gating.
+    SetCombatVisualState(true)
+  else
+    if not IsNativeTrackerCollapsed() then
+      SetNativeTrackerCollapsed(true)
+    end
+  end
+end
+
+local function ToggleTracker()
+  if InCombatLockdown() then
+    SetCombatVisualState(not inCombatCollapsed)
+  else
+    local target = not IsNativeTrackerCollapsed()
+    SetNativeTrackerCollapsed(target)
+  end
+end
+
+local function HookTrackerMinimizeButton()
+  local minBtn = GetMinimizeButton()
+  if not minBtn or minBtn._mySettingsHooked then
+    return
+  end
+  minBtn._mySettingsHooked = true
+
+  local nativeOnClick = minBtn:GetScript("OnClick")
+  minBtn:SetScript("OnClick", function(self, button, down)
+    if InCombatLockdown() then
+      -- NOTE(jlima): Intercept in-combat clicks to prevent ADDON_ACTION_BLOCKED cascades from Blizzard's native SetIsCollapsed.
+      ToggleTracker()
+    else
+      if nativeOnClick then
+        nativeOnClick(self, button, down)
+      else
+        ToggleTracker()
+      end
+    end
+  end)
 end
 
 local function CheckPvPCollapse()
@@ -240,6 +320,12 @@ local function CheckPvPCollapse()
   if instanceType == "pvp" or instanceType == "arena" or C_PvP.IsPVPMap() then
     CollapseTracker()
   end
+end
+
+SLASH_MYTRACKER1 = "/trackertoggle"
+SLASH_MYTRACKER2 = "/tracker"
+SlashCmdList["MYTRACKER"] = function()
+  ToggleTracker()
 end
 
 -- 4. UNIFIED CORE SUBSYSTEM
@@ -255,6 +341,8 @@ Core:RegisterEvent("VOICE_CHAT_OUTPUT_DEVICES_UPDATED")
 
 Core:SetScript("OnEvent", function(self, event, ...)
   if event == "PLAYER_LOGIN" then
+    HookTrackerMinimizeButton()
+
     local graphicsSettings = {
       -- GUI: Options -> System -> Graphics -> "Render Scale"
       renderscale = IsMacClient() and "0.75" or "0.999",
@@ -326,6 +414,7 @@ Core:SetScript("OnEvent", function(self, event, ...)
     Log(Colorize(string.format("Game Version: %s | TOC: %s", buildData[1], buildData[4]), "hunter"))
     Log(Colorize(string.format("Setup Complete: %d success, %d errors", setvarSuccess, setvarFailed), "hunter"))
   elseif event == "PLAYER_ENTERING_WORLD" then
+    HookTrackerMinimizeButton()
     OptimizeConnection("Auto")
     -- NOTE(jlima): check instance state on loading screens to collapse in pvp
     C_Timer.After(0.5, CheckPvPCollapse)
@@ -356,12 +445,22 @@ Core:SetScript("OnEvent", function(self, event, ...)
     C_CVar.SetCVar("findYourSelfModeCircle", "1")
     C_CVar.SetCVar("findYourSelfModeOutline", "1")
 
-    -- NOTE(jlima): collapse on combat entry; zero code paths re-expand on drop
+    -- NOTE(jlima): Visually collapse on combat entry; preserves in-combat manual toggle capability.
     CollapseTracker()
   elseif event == "PLAYER_REGEN_ENABLED" then
     C_CVar.SetCVar("findYourSelfAnywhere", "0")
     C_CVar.SetCVar("findYourSelfModeCircle", "0")
     C_CVar.SetCVar("findYourSelfModeOutline", "0")
+
+    -- NOTE(jlima): Reset combat visual overrides and commit state out of lockdown via official API.
+    local content = GetTrackerContentFrame()
+    if content then
+      content:SetAlpha(1)
+      if content.SetMouseClickThrough then
+        content:SetMouseClickThrough(false)
+      end
+    end
+    SetNativeTrackerCollapsed(inCombatCollapsed)
   elseif event == "PLAYER_DEAD" then
     local inInstance, instanceType = IsInInstance()
     if inInstance and (instanceType == "pvp" or instanceType == "arena") then
