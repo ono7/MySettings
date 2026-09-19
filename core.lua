@@ -146,7 +146,7 @@ local baseCVars = {
 
   -- GUI: Options -> Network -> "Advanced Combat Logging"
   -- NOTE(jlima): Streams player positions, gear, and combat states directly to disk for Warcraft Logs/Details.
-  advancedCombatLogging = "1",
+  advancedCombatLogging = "0",
 
   -- --- ENGINE/HIDDEN CVARS (No standard GUI menu toggle) ---
 
