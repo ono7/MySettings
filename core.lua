@@ -109,7 +109,20 @@ local baseCVars = {
   enablePVPNotifyAFK = "0",
 
   -- GUI: Options -> Gameplay -> Combat -> "Soft Target Icon"
-  softTargetIconEnemy = "1",
+
+  -- NOTE(jlima): Forces the modern cone-based raycast priority algorithm for tab targeting.
+  -- TargetNearestUseNew = "1",
+  TargetNearestUseNew = "0",
+
+  -- NOTE(jlima): Heavily bias target acquisition toward units engaged in combat with the player.
+  TargetPriorityCombatFacingLimit = "0", -- Disables wide-angle dropoff, keeping priority near 180° frontal arc
+  TargetPriorityCombatPriority = "1", -- Targets engaged in combat get highest priority tier
+  TargetPriorityValueBank = "1", -- Emphasizes distance/proximity weighting over screen-center alignment
+
+  -- GUI: Options -> Gameplay -> Controls -> "Target Priority"
+  -- 1 = PvE/Default, 3 = PvP priority (players over pets)
+
+  -- NOTE(jlima): Keep deselectOnClick disabled to prevent accidental target drops via ground clicks.
 
   -- GUI: Options -> Gameplay -> Combat -> "PvP Frames Display Class Color"
   pvpFramesDisplayClassColor = "1",
@@ -145,9 +158,6 @@ local baseCVars = {
 
   -- NOTE(jlima): Eliminates camera follow acceleration/deceleration smoothing for 1:1 mouse tracking.
   cameraSmoothStyle = "0",
-
-  -- NOTE(jlima): Forces the modern cone-based raycast priority algorithm for tab targeting.
-  TargetNearestUseNew = "1",
 
   -- NOTE(jlima): Max render distance for enemy nameplates (60 yards is the engine hardcap).
   nameplateMaxDistance = "60",
